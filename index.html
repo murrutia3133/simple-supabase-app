@@ -1,1 +1,51 @@
- 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Supabase Website</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://jxlqhkuziytwalpvdivs.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4bHFoa3V6aXl0d2FscHZkaXZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkwMjgzMzAsImV4cCI6MjA0NDYwNDMzMH0.WgnNxSXdc6qRALRVGDKFT2lsCEfh2VYlUTkQ7Ne8Xlk'
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        async function addMessage() {
+            const message = document.getElementById('message').value
+            const { data, error } = await supabase
+                .from('messages')
+                .insert([{ content: message }])
+            if (error) console.error('Error:', error)
+            else {
+                console.log('Message added:', data)
+                fetchMessages()
+            }
+        }
+
+        async function fetchMessages() {
+            const { data, error } = await supabase
+                .from('messages')
+                .select('content')
+            if (error) console.error('Error:', error)
+            else {
+                const messageList = document.getElementById('messageList')
+                messageList.innerHTML = ''
+                data.forEach(msg => {
+                    const li = document.createElement('li')
+                    li.textContent = msg.content
+                    messageList.appendChild(li)
+                })
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchMessages)
+    </script>
+</head>
+<body>
+    <h1>My Supabase Website</h1>
+    <input type="text" id="message" placeholder="Enter a message">
+    <button onclick="addMessage()">Add Message</button>
+    <h2>Messages:</h2>
+    <ul id="messageList"></ul>
+</body>
+</html>
